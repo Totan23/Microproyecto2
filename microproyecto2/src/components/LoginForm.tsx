@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './LoginForm.module.css';
-import { Link } from 'react-router-dom';
 
 interface LoginFormState {
   username: string;
@@ -8,19 +8,21 @@ interface LoginFormState {
 }
 
 const LoginForm: React.FC = () => {
-
+  const navigate = useNavigate(); 
   const [formData, setFormData] = useState<LoginFormState>({ username: '', password: '' });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     console.log("Datos de inicio de sesión:", formData);
+
+    navigate('/inicio'); 
   };
 
   return (

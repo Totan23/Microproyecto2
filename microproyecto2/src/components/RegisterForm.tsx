@@ -1,7 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
-// import { registerUser } from './firebase/useAuth';
-// import { saveUserInfo } from './firebase/useFirestore';
+import { Link, useNavigate } from 'react-router-dom'; // Importa useNavigate
 import styles from './RegisterForm.module.css';
 
 interface RegisterFormData {
@@ -14,6 +12,7 @@ interface RegisterFormData {
 }
 
 const RegisterForm: React.FC = () => {
+  const navigate = useNavigate(); // Inicializa useNavigate
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
@@ -30,26 +29,10 @@ const RegisterForm: React.FC = () => {
     });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    try {
-      // Registra el usuario usando Firebase Authentication
-      const userCredential = await registerUser(formData.email, formData.password);
-      console.log("Usuario registrado con éxito:", userCredential.user);
-
-      // Opcional: Guarda información adicional en Firestore
-      // await saveUserInfo(userCredential.user.uid, {
-      //   firstName: formData.firstName,
-      //   lastName: formData.lastName,
-      //   username: formData.username,
-      //   favoriteGame: formData.favoriteGame,
-      // });
-
-      // Manejar el éxito del registro, como redirigir al usuario o limpiar el formulario
-    } catch (error) {
-      console.error("Error en el registro:", error);
-      // Manejar errores de registro aquí, como mostrar un mensaje al usuario
-    }
+    console.log("Datos de registro:", formData);
+    navigate('/inicio');
   };
 
   return (

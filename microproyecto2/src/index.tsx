@@ -1,11 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
+import { createRoot } from 'react-dom/client';
 import App from './App';
+import './index.css';
 
-ReactDOM.render(
+const container = document.getElementById('root');
+if (!container) throw new Error('Failed to find the root element');
+
+const root = createRoot(container); // Ahora TypeScript sabe que container no es null
+root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
+
