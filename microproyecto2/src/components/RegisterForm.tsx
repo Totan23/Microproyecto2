@@ -32,8 +32,8 @@ const RegisterForm: React.FC = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     console.log("Datos de registro:", formData);
-    navigate('/inicio');
-  };
+    navigate('/login'); 
+};
 
   return (
     <div className={styles.formContainer}>
