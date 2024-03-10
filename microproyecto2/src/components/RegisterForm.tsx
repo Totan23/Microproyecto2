@@ -1,19 +1,11 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { Link, Navigate } from 'react-router-dom';
+import { addDoc, collection } from 'firebase/firestore';
+import firestore from './firebase'; // Importa la instancia de Firestore
 import styles from './RegisterForm.module.css';
 
-interface RegisterFormData {
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  password: string;
-  favoriteGame: string;
-}
-
 const RegisterForm: React.FC = () => {
-  const navigate = useNavigate(); // Inicializa useNavigate
-  const [formData, setFormData] = useState<RegisterFormData>({
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     username: '',
@@ -21,6 +13,8 @@ const RegisterForm: React.FC = () => {
     password: '',
     favoriteGame: ''
   });
+  const [errorMessage, setErrorMessage] = useState('');
+  const [redirect, setRedirect] = useState(false); // Estado para controlar la redirección
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -29,16 +23,36 @@ const RegisterForm: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log("Datos de registro:", formData);
-    navigate('/login'); 
-};
+
+    // Verificar que todos los campos estén completos
+    if (!formData.firstName || !formData.lastName || !formData.username || !formData.email || !formData.password || !formData.favoriteGame) {
+      setErrorMessage('Por favor, complete todos los campos.'); // Establece el mensaje de error
+      return;
+    }
+
+    try {
+      const usersCollectionRef = collection(firestore, 'users'); // Referencia a la colección 'users'
+      await addDoc(usersCollectionRef, formData); // Agregar un nuevo documento con los datos del formulario
+      console.log("Usuario registrado correctamente");
+      setRedirect(true); // Establece el estado de redirección a verdadero
+    } catch (error) {
+      console.error("Error al registrar usuario:", error);
+    }
+  };
+
+  // Si el estado de redirección es verdadero, redirige al usuario a la página de inicio de sesión
+  if (redirect) {
+    return <Navigate to="/login" />;
+  }
 
   return (
     <div className={styles.formContainer}>
       <h2 className={styles.formTitle}>Registrar Usuario</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Agregar el mensaje de error */}
+        {errorMessage && <p className={`errorMessage ${styles.errorMessage}`}>{errorMessage}</p>}
         <div className={styles.formField}>
           <label htmlFor="firstName" className={styles.label}>Nombre</label>
           <input type="text" name="firstName" id="firstName" value={formData.firstName} onChange={handleChange} className={styles.formInput} />

@@ -1,34 +1,60 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import firestore from './firebase';
 import styles from './LoginForm.module.css';
 
-interface LoginFormState {
-  username: string;
-  password: string;
-}
-
 const LoginForm: React.FC = () => {
-  const navigate = useNavigate(); 
-  const [formData, setFormData] = useState<LoginFormState>({ username: '', password: '' });
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log("Datos de inicio de sesión:", formData);
 
-    navigate('/inicio'); 
+    // Verificar si los campos de usuario y contraseña están vacíos
+    if (!formData.username || !formData.password) {
+      setErrorMessage('Por favor, complete todos los campos.'); // Establecer mensaje de error
+      return;
+    }
+
+    try {
+      const usersRef = collection(firestore, 'users');
+      const q = query(usersRef, where('username', '==', formData.username), where('password', '==', formData.password));
+
+      // Realizar la consulta
+      const querySnapshot = await getDocs(q);
+      
+      // Establecer el mensaje de error antes de verificar si el querySnapshot está vacío
+      setErrorMessage('Credenciales incorrectas.'); // Establecer mensaje de error
+
+      if (!querySnapshot.empty) {
+        // Usuario encontrado, iniciar sesión exitoso
+        console.log("Inicio de sesión exitoso");
+        navigate('/inicio');
+      } else {
+        // Reiniciar el formulario
+        setFormData({ username: '', password: '' });
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+    }
   };
 
   return (
     <div className={styles.formContainer}>
       <h2 className={styles.formTitle}>Iniciar Sesión</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
+        {/* Mostrar mensaje de error si existe */}
+        {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
         <div className={styles.formField}>
           <label htmlFor="username" className={styles.label}>Nombre de usuario</label>
           <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} className={styles.formInput} />

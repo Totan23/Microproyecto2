@@ -72,3 +72,8 @@
 .loginFormContainer {
   max-width: 400px;
 }
+
+.errorMessage {
+  color: #ffffff; /* Cambio del color del texto a blanco */
+  text-shadow: 0 0 5px #39FF14, 0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 40px #39FF14; /* Efecto de texto fluorescente */
+}
