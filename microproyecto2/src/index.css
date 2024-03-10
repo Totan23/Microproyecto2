@@ -6,7 +6,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background: linear-gradient(-45deg, #11a427, #000000, #000000, #11a427); /* Fondo negro */
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
 }
